@@ -3,9 +3,11 @@ package com.example.sqldequy.Service;
 import com.example.sqldequy.DTO.MenuDTO;
 import com.example.sqldequy.Entity.MenuEntity;
 import com.example.sqldequy.Repository.MenuRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -42,6 +44,21 @@ public class MenuService {
         }
 
         return result;
+    }
+
+    public Page<MenuEntity> getMenus(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);  // page - 1 vì Spring bắt đầu từ trang 0
+        return menuRepository.findAll(pageable);
+    }
+    public Page<MenuEntity> getMenus(int page, int size, String orderColumn, String orderDirection) {
+        // Kiểm tra hướng sắp xếp và áp dụng Sort.Direction
+        Sort.Direction direction = Sort.Direction.fromString(orderDirection);
+
+        // Tạo Pageable từ các tham số, sử dụng cột và hướng sắp xếp
+        Pageable pageable = PageRequest.of(page - 1, size, direction, orderColumn);  // page bắt đầu từ 0
+
+        // Trả về các bản ghi phân trang với sắp xếp
+        return menuRepository.findAll(pageable);
     }
 
 
